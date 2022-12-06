@@ -234,11 +234,12 @@ int main()
             for (int i = 0; i < 3; i++) { // i tells us what command we are on
                 char * data;
                 int val; // val tells us the value of the current command
-                int j = 0;
+                int j = 0; // used to set data's chars individually
 
                 // read only the first number
                 for (char c = ser_read(0); c != ' '; c = ser_read(0)) {
                     data[j] = c;
+                    j++;
                 }
                 sscanf(data, "%d", &val); // put number in val
                 command[i] = val;
