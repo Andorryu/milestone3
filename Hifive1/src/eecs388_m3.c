@@ -229,7 +229,7 @@ int main()
 
             raspberrypi_int_handler(0);
 
-            int[] command = [0,0,0] // [direction, angle, time]
+            int[] command = [0,0,0]; // [direction, angle, time]
 
             for (int i = 0; i < 3; i++) { // i tells us what command we are on
                 char * data;
@@ -244,6 +244,8 @@ int main()
                 sscanf(data, "%d", &val); // put number in val
                 command[i] = val;
             }
+
+            printf("command values: [%d, %d, %d]", command[0], command[1], command[2]);
 
             // perform the command
             switch (command[0]) {
