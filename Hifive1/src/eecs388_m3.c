@@ -207,7 +207,9 @@ int main()
     delay(2000);
 
     // initialize UART channels
+    int devid = 1; // 1 = ttyAMA1, 0 = ttyAMA2
     ser_setup(0); // uart0 (receive from raspberry pi)
+    ser_setup(1); 
     
     printf("Setup completed.\n");
     printf("Begin the main loop.\n");
@@ -225,42 +227,38 @@ int main()
             steering(deg)
         }
         */
-        if (ser_isready(0)) {
 
-            raspberrypi_int_handler(0);
+        if (ser_isready(devid)) {
+            printf("ser_read is ready!\n");
+            raspberrypi_int_handler(devid);
 
-            int command[] = {0,0,0}; // [direction, angle, time]
+            char data[6]; // [direction, angle, time]
+            
 
-            for (int i = 0; i < 3; i++) { // i tells us what command we are on
-                char * data;
-                int val; // val tells us the value of the current command
-                int j = 0; // used to set data's chars individually
+            //for (int i = 0; i < 3; i++) {
+            //for (int i = 0; i < 6; i++) {
+                data[0] = ser_read(devid);
+            //}
+            //}
 
-                // read only the first number
-                for (char c = ser_read(0); c != ' '; c = ser_read(0)) {
-                    data[j] = c;
-                    j++;
-                }
-                sscanf(data, "%d", &val); // put number in val
-                command[i] = val;
-            }
-
-            printf("command values: [%d, %d, %d]", command[0], command[1], command[2]);
+            //ser_readline(devid, 6, data);
+            //sscanf(data, "%d %d %d", command[0], command[1], command[2]);
+            printf("%d %d %d\n", data[0], data[1], data[2]);
 
             // perform the command
-            switch (command[0]) {
-                case 0:
-                    stopMotor();
-                    break;
-                case 1:
-                    driveForward(1);
-                    break;
-                case 2:
-                    driveReverse(1);
-                    break;
-            }
-            steering(command[1]);
-            delay(command[2] * 1000);
+            //switch (command[0]) {
+            //    case 0:
+            //        stopMotor();
+            //        break;
+            //    case 1:
+            //        driveForward(1);
+            //        break;
+            //    case 2:
+            //        driveReverse(1);
+            //        break;
+            //}
+            //steering(command[1]);
+            //delay(command[2] * 1000);
         }
 
     }
