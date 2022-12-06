@@ -7,11 +7,7 @@ while True:
 	direction = raw_input()
 	angle = raw_input()
 	time = raw_input()
-	command = direction
-	ser.write(bytes(command))
-	command = angle
-	ser.write(bytes(command))
-	command = time
+	command = direction + " " + angle + " " + time + ""
 	ser.write(bytes(command))
 
 ser.close()

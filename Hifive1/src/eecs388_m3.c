@@ -226,23 +226,40 @@ int main()
         }
         */
         if (ser_isready(0)) {
-            char * data;
+
             raspberrypi_int_handler(0);
-            ser_readline(0, 28, data);
-            if (!strncmp(data, "direction", 9)) {
-                int direction;
-                sscanf(data+10, "%d", &direction);
-                if (direction == 1) driveForward(1);
-                if (direction == 0) driveReverse(1);
+
+            int[] command = [0,0,0] // [direction, angle, time]
+
+            for (int i = 0; i < 3; i++) { // i tells us what command we are on
+                char * data;
+                int val; // val tells us the value of the current command
+                int j = 0;
+
+                // read only the first number
+                for (char c = ser_read(0); c != ' '; c = ser_read(0)) {
+                    data[j] = c;
+                }
+                sscanf(data, "%d", &val); // put number in val
+                command[i] = val;
             }
-            memmove(data, data+12, 16);
-            if (!strncmp(data, "angle", 5)) {
-                int angle;
-                sscanf(data+7, "%d", &angle);
-                steering(angle);
+
+            // perform the command
+            switch (command[0]) {
+                case 0:
+                    stopMotor();
+                    break;
+                case 1:
+                    driveForward(1);
+                    break;
+                case 2:
+                    driveReverse(1);
+                    break;
             }
-            memmove(data, data+7, )
+            steering(command[1]);
+            delay(command[2] * 1000);
         }
+
     }
     return 0;
 }
