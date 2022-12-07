@@ -207,7 +207,6 @@ int main()
     delay(2000);
 
     // initialize UART channels
-    int devid = 1; // 1 = ttyAMA1, 0 = ttyAMA2
     ser_setup(0); // uart0 (receive from raspberry pi)
     ser_setup(1); 
     
@@ -217,24 +216,49 @@ int main()
     // Initialize global angle
     g_angle = 0;
 
-    int running = 1;
-    char str[6]={0,0,0,0,0,0};
-
-    // str
-    while (running) {
-        int i = 0;
-        while (ser_isready(devid)) {
-            printf("ser_read is ready!\n");
-            
-            str[i] = ser_read(devid);
-
-            if (i == 5) running = 0;
-            i++;
-        }
-    }
-
-
-    printf("%d %d %d %d %d %d\n", str[0], str[1], str[2], str[3], str[4], str[5]);
+    sendData();
 
     return 0;
+}
+
+void sendData() {
+    int devid = 1; // 1 = ttyAMA1, 0 = ttyAMA2
+    int running = 1;
+    char str[8]={0,0,0,0,0,0,0,0};
+    int val[3] = {0,0,0};
+
+    while(1) {
+        // str
+        while (running) {
+            int i = 0;
+            while (ser_isready(devid)) {
+                printf("ser_read is ready!\n");
+
+                str[i] = ser_read(devid);
+
+                if (i == 7) running = 0;
+                i++;
+            }
+        }
+
+        sscanf(str, "%d %d %d", &val[0], &val[1], &val[2]);
+        printf("%d %d %d\n", val[0], val[1], val[2]);
+
+        steering(val[1]);
+        switch (val[0]) {
+            case 0:
+                stopMotor();
+                break;
+            case 1:
+                driveForward(1);
+                break;
+            case 2:
+                driveReverse(1);
+                break;
+        }
+        delay(val[2] * 1000);
+
+
+        running = 1;
+    }
 }
