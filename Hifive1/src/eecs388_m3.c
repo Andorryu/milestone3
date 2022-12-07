@@ -217,50 +217,24 @@ int main()
     // Initialize global angle
     g_angle = 0;
 
-    // Drive loop
-    while (1) {
-        /*
-        if (is UART0 ready?)
-        {
-            raspberrypi_int_handler(devid)
+    int running = 1;
+    char str[6]={0,0,0,0,0,0};
 
-            steering(deg)
-        }
-        */
-
-        if (ser_isready(devid)) {
+    // str
+    while (running) {
+        int i = 0;
+        while (ser_isready(devid)) {
             printf("ser_read is ready!\n");
-            raspberrypi_int_handler(devid);
-
-            char data[6]; // [direction, angle, time]
             
+            str[i] = ser_read(devid);
 
-            //for (int i = 0; i < 3; i++) {
-            //for (int i = 0; i < 6; i++) {
-                data[0] = ser_read(devid);
-            //}
-            //}
-
-            //ser_readline(devid, 6, data);
-            //sscanf(data, "%d %d %d", command[0], command[1], command[2]);
-            printf("%d %d %d\n", data[0], data[1], data[2]);
-
-            // perform the command
-            //switch (command[0]) {
-            //    case 0:
-            //        stopMotor();
-            //        break;
-            //    case 1:
-            //        driveForward(1);
-            //        break;
-            //    case 2:
-            //        driveReverse(1);
-            //        break;
-            //}
-            //steering(command[1]);
-            //delay(command[2] * 1000);
+            if (i == 5) running = 0;
+            i++;
         }
-
     }
+
+
+    printf("%d %d %d %d %d %d\n", str[0], str[1], str[2], str[3], str[4], str[5]);
+
     return 0;
 }
